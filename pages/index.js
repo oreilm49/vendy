@@ -12,27 +12,20 @@ class Index extends React.Component {
       <Page>
         <TitleBar
           primaryAction={{
-            content: 'Select products',
+            content: 'Create Vendy',
             onAction: () => this.setState({ open: true }),
           }}
         />
-        <ResourcePicker
-          resourceType="Product"
-          showVariants={false}
-          open={this.state.open}
-          onSelection={(resources) => this.handleSelection(resources)}
-          onCancel={() => this.setState({ open: false })}
-        />
         <Layout>
           <EmptyState
-            heading="Select products to start"
+            heading="Create a new digital assistant"
             action={{
-              content: 'Select products',
+              content: 'Create Vendy',
               onAction: () => this.setState({ open: true }),
             }}
             image={img}
           >
-            <p>Select products and change their price temporarily</p>
+            <p>Create a digital assistant to help your customers find products faster!</p>
           </EmptyState>
         </Layout>
         <ResourceListWithProducts />

@@ -9,6 +9,6 @@ router.get('/', async (ctx) => {
     message: 'Vendy api v1 home route.'
   };
 })
-router.use('/assistants', assistants.routes())
+router.use(assistants.routes())
 
 module.exports = router;

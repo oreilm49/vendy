@@ -1,6 +1,7 @@
 require('isomorphic-fetch');
 const dotenv = require('dotenv');
 const Koa = require('koa');
+const bodyParser = require('koa-bodyparser');
 const next = require('next');
 const { default: createShopifyAuth } = require('@shopify/koa-shopify-auth');
 const { verifyRequest } = require('@shopify/koa-shopify-auth');
@@ -18,6 +19,7 @@ dotenv.config();
 app.prepare().then(() => {
   const server = new Koa();
   server.use(session(server));
+  server.use(bodyParser());
   // API routes
   server.use(apiV1.routes())
 

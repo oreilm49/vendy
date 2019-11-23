@@ -78,4 +78,23 @@ router.get('/:id/options/:option', async (ctx) => {
     }
 })
 
+// UPDATE an option by id
+router.put('/:id/options/:option', async (ctx) => {
+    try {
+      const option = await models.Assistant.findOneAndUpdate(
+        { "_id": ctx.params.id, "options._id": ctx.params.option },
+        { "$set": { "options.$": ctx.request.body }}
+      );
+      if (!option) {
+        ctx.throw(404);
+      }
+      ctx.body = option;
+    } catch (err) {
+      if (err.name === 'CastError' || err.name === 'NotFoundError') {
+        ctx.throw(404);
+      }
+      ctx.throw(500);
+    }
+})
+
 module.exports = router;

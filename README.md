@@ -49,10 +49,9 @@ git clone https://github.com/oreilm49/vendy.git
 ```sh
 npm install
 ```
-4. Install ngrok
+4. Install localtunnel
 ```JS
-npm install ngrok -g
-ngrok http 3000
+npm install -g localtunnel
 ```
 5. Follow steps [here](https://developers.shopify.com/tutorials/build-a-shopify-app-with-node-and-react/embed-your-app-in-shopify) to embed app in shopify
 
@@ -65,11 +64,11 @@ ngrok http 3000
 ```sh
 npm run dev
 ```
-2. Open a new terminal and run ngrok
+2. Open a new terminal and run localtunnel
 ```sh
-ngrok http 3000
+lt --port 3000
 ```
-3. Add the ngrok https app url to Shopify. Go to the [app set up page for vendy](https://partners.shopify.com/991203/apps/3274991/edit) and paste the link into the App URL input and then into the Whitelisted redirection input with this format: https://xxxx.ngrok.io/auth/callback and save. Full guide [here](https://developers.shopify.com/tutorials/build-a-shopify-app-with-node-and-react/embed-your-app-in-shopify#authenticate-and-test) This embeds the new instance of the app in shopify.
+3. Add the localtunnel url to Shopify. Go to the [app set up page for vendy](https://partners.shopify.com/991203/apps/3274991/edit) and paste the link into the App URL input and then into the Whitelisted redirection input with this format: https://<-LINK->/auth/callback and save. Full guide [here](https://developers.shopify.com/tutorials/build-a-shopify-app-with-node-and-react/embed-your-app-in-shopify#authenticate-and-test) This embeds the new instance of the app in shopify.
 
 4. Once the above steps have been followed you should be able to see the app running at
 ```

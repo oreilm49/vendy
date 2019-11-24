@@ -36,6 +36,40 @@ router.get('/:id', async (ctx) => {
     }
 })
 
+// UPDATE one assistant
+router.put('/:id', async (ctx) => {
+  try {
+    const saved = await models.Assistant.findByIdAndUpdate(ctx.params.id,
+      { "$set": { "name": ctx.request.body.name }}, {new: true}
+    );
+    if (!saved) {
+      ctx.throw(404);
+    }
+    ctx.body = saved;
+  } catch (err) {
+    if (err.name === 'CastError' || err.name === 'NotFoundError') {
+      ctx.throw(404);
+    }
+    ctx.throw(500);
+  }
+})
+
+// DELETE one assistant
+router.delete('/:id', async (ctx) => {
+    try {
+      const deleted = await models.Assistant.findByIdAndDelete(ctx.params.id);
+      if (!deleted) {
+        ctx.throw(404);
+      }
+      ctx.body = "";
+    } catch (err) {
+      if (err.name === 'CastError' || err.name === 'NotFoundError') {
+        ctx.throw(404);
+      }
+      ctx.throw(500);
+    }
+})
+
 // POST one assistant
 router.post('/', async (ctx) => {
     try {
@@ -47,13 +81,11 @@ router.post('/', async (ctx) => {
   }
 })
 
-// POST option to assistant
-router.post('/:id/options/', async (ctx) => {
+// POST question to assistant
+router.post('/:id/questions/', async (ctx) => {
     try {
-      const body = ctx.request.body;
-      const id = ctx.params.id
-      const assistant = await models.Assistant.findByIdAndUpdate(id,
-        { $push: { "options": body } }
+      const assistant = await models.Assistant.findByIdAndUpdate(ctx.params.id,
+        { $push: { "questions": ctx.request.body }}, {new: true}
       );
       ctx.body = assistant;
   } catch (err) {
@@ -61,15 +93,15 @@ router.post('/:id/options/', async (ctx) => {
   }
 })
 
-// GET an option by id
-router.get('/:id/options/:option', async (ctx) => {
+// GET a question by id
+router.get('/:id/questions/:question', async (ctx) => {
     try {
       const assistant = await models.Assistant.findById(ctx.params.id)
-      const option = await assistant.options.id(ctx.params.option);
-      if (!option) {
+      const question = await assistant.questions.id(ctx.params.question);
+      if (!question) {
         ctx.throw(404);
       }
-      ctx.body = option;
+      ctx.body = question;
     } catch (err) {
       if (err.name === 'CastError' || err.name === 'NotFoundError') {
         ctx.throw(404);
@@ -78,30 +110,69 @@ router.get('/:id/options/:option', async (ctx) => {
     }
 })
 
-// UPDATE an option by id
-router.put('/:id/options/:option', async (ctx) => {
+// UPDATE a question by id
+router.put('/:id/questions/:question', async (ctx) => {
     try {
-      const option = await models.Assistant.findOneAndUpdate(
-        { "_id": ctx.params.id, "options._id": ctx.params.option },
-        { "$set": { "options.$": ctx.request.body }}
+      const assistant = await models.Assistant.findOneAndUpdate(
+        { "_id": ctx.params.id, "questions._id": ctx.params.question },
+        { "$set": { "questions.$": ctx.request.body }}, {new: true}
       );
-      if (!option) {
+      if (!assistant) {
         ctx.throw(404);
       }
-      ctx.body = option;
+      ctx.body = assistant;
     } catch (err) {
       if (err.name === 'CastError' || err.name === 'NotFoundError') {
         ctx.throw(404);
       }
       ctx.throw(500);
     }
+})
+
+// CREATE an option for a question
+router.post('/:id/questions/:question/options', async (ctx) => {
+  try {
+    const assistant = await models.Assistant.findById(ctx.params.id)
+    const question = await assistant.questions.id(ctx.params.question)
+    await question.options.push(ctx.request.body)
+    const saved = await assistant.save()
+    if (!saved) {
+      ctx.throw(404);
+    }
+    ctx.body = saved;
+  } catch (err) {
+    if (err.name === 'CastError' || err.name === 'NotFoundError') {
+      ctx.throw(404);
+    }
+    ctx.throw(500);
+  }
+})
+
+// DELETE an option for a question
+router.delete('/:id/questions/:question/options/:option', async (ctx) => {
+  try {
+    const assistant = await models.Assistant.findById(ctx.params.id)
+    const question = await assistant.questions.id(ctx.params.question)
+    await question.options.pull({_id:ctx.params.option})
+    const saved = await assistant.save()
+    if (!saved) {
+      ctx.throw(404);
+    }
+    ctx.body = saved;
+  } catch (err) {
+    if (err.name === 'CastError' || err.name === 'NotFoundError') {
+      ctx.throw(404);
+    }
+    ctx.throw(500);
+  }
 })
 
 // CREATE an option attribute link
-router.post('/:id/options/:option/attributes', async (ctx) => {
+router.post('/:id/questions/:question/options/:option/attributes', async (ctx) => {
     try {
       const assistant = await models.Assistant.findById(ctx.params.id)
-      const option = await assistant.options.id(ctx.params.option)
+      const question = await assistant.questions.id(ctx.params.question)
+      const option = await question.options.id(ctx.params.option)
       if(Array.isArray(ctx.request.body)){
         ctx.request.body.forEach(val=>{
           option.attributes.push(val)
@@ -123,10 +194,11 @@ router.post('/:id/options/:option/attributes', async (ctx) => {
 })
 
 // DELETE an option attribute link
-router.delete('/:id/options/:option/attributes/:attribute', async (ctx) => {
+router.delete('/:id/questions/:question/options/:option/attributes/:attribute', async (ctx) => {
     try {
       const assistant = await models.Assistant.findById(ctx.params.id)
-      const option = await assistant.options.id(ctx.params.option)
+      const question = await assistant.questions.id(ctx.params.question)
+      const option = await question.options.id(ctx.params.option)
       await option.attributes.pull({_id:ctx.params.attribute})
       const saved = await assistant.save()
       if (!saved) {
@@ -142,10 +214,11 @@ router.delete('/:id/options/:option/attributes/:attribute', async (ctx) => {
 })
 
 // CREATE an option product link
-router.post('/:id/options/:option/products', async (ctx) => {
+router.post('/:id/questions/:question/options/:option/products', async (ctx) => {
     try {
       const assistant = await models.Assistant.findById(ctx.params.id)
-      const option = await assistant.options.id(ctx.params.option)
+      const question = await assistant.questions.id(ctx.params.question)
+      const option = await question.options.id(ctx.params.option)
       if(Array.isArray(ctx.request.body)){
         ctx.request.body.forEach(val=>{
           option.products.push(val)
@@ -167,10 +240,11 @@ router.post('/:id/options/:option/products', async (ctx) => {
 })
 
 // DELETE an option product link
-router.delete('/:id/options/:option/products/:product', async (ctx) => {
+router.delete('/:id/questions/:question/options/:option/products/:product', async (ctx) => {
     try {
       const assistant = await models.Assistant.findById(ctx.params.id)
-      const option = await assistant.options.id(ctx.params.option)
+      const question = await assistant.questions.id(ctx.params.question)
+      const option = await question.options.id(ctx.params.option)
       await option.products.pull(ctx.params.product)
       const saved = await assistant.save()
       if (!saved) {

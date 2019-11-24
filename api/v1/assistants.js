@@ -97,4 +97,29 @@ router.put('/:id/options/:option', async (ctx) => {
     }
 })
 
+// CREATE an option attribute link
+router.post('/:id/options/:option/attributes', async (ctx) => {
+    try {
+      const assistant = await models.Assistant.findById(ctx.params.id)
+      const option = await assistant.options.id(ctx.params.option)
+      if(Array.isArray(ctx.request.body)){
+        ctx.request.body.forEach(val=>{
+          option.attributes.push(val)
+        })
+      } else {
+        await option.attributes.push(ctx.request.body)
+      }
+      const saved = await assistant.save()
+      if (!saved) {
+        ctx.throw(404);
+      }
+      ctx.body = saved;
+    } catch (err) {
+      if (err.name === 'CastError' || err.name === 'NotFoundError') {
+        ctx.throw(404);
+      }
+      ctx.throw(500);
+    }
+})
+
 module.exports = router;

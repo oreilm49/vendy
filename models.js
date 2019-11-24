@@ -12,15 +12,21 @@ const optionSchema = mongoose.Schema({
     attributes: [attributeSchema],
 });
 
-const assistantSchema = mongoose.Schema({
+const questionSchema = mongoose.Schema({
     name: { type: mongoose.SchemaTypes.String, required: true },
     options: [optionSchema],
+});
+
+const assistantSchema = mongoose.Schema({
+    name: { type: mongoose.SchemaTypes.String, required: true },
+    questions: [questionSchema],
     customCSS: { type: mongoose.SchemaTypes.String, required: false }
 });
 
 
 module.exports = {
     Assistant: mongoose.model("assistant", assistantSchema),
+    Question: mongoose.model("question", questionSchema),
     Option: mongoose.model("option", optionSchema),
     Attribute: mongoose.model("attribute", attributeSchema)
 }

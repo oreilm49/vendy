@@ -122,4 +122,67 @@ router.post('/:id/options/:option/attributes', async (ctx) => {
     }
 })
 
+// DELETE an option attribute link
+router.delete('/:id/options/:option/attributes/:attribute', async (ctx) => {
+    try {
+      const assistant = await models.Assistant.findById(ctx.params.id)
+      const option = await assistant.options.id(ctx.params.option)
+      await option.attributes.pull({_id:ctx.params.attribute})
+      const saved = await assistant.save()
+      if (!saved) {
+        ctx.throw(404);
+      }
+      ctx.body = saved;
+    } catch (err) {
+      if (err.name === 'CastError' || err.name === 'NotFoundError') {
+        ctx.throw(404);
+      }
+      ctx.throw(500);
+    }
+})
+
+// CREATE an option product link
+router.post('/:id/options/:option/products', async (ctx) => {
+    try {
+      const assistant = await models.Assistant.findById(ctx.params.id)
+      const option = await assistant.options.id(ctx.params.option)
+      if(Array.isArray(ctx.request.body)){
+        ctx.request.body.forEach(val=>{
+          option.products.push(val)
+        })
+      } else {
+        ctx.throw(400);
+      }
+      const saved = await assistant.save()
+      if (!saved) {
+        ctx.throw(404);
+      }
+      ctx.body = saved;
+    } catch (err) {
+      if (err.name === 'CastError' || err.name === 'NotFoundError') {
+        ctx.throw(404);
+      }
+      ctx.throw(500);
+    }
+})
+
+// DELETE an option product link
+router.delete('/:id/options/:option/products/:product', async (ctx) => {
+    try {
+      const assistant = await models.Assistant.findById(ctx.params.id)
+      const option = await assistant.options.id(ctx.params.option)
+      await option.products.pull(ctx.params.product)
+      const saved = await assistant.save()
+      if (!saved) {
+        ctx.throw(404);
+      }
+      ctx.body = saved;
+    } catch (err) {
+      if (err.name === 'CastError' || err.name === 'NotFoundError') {
+        ctx.throw(404);
+      }
+      ctx.throw(500);
+    }
+})
+
 module.exports = router;

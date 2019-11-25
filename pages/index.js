@@ -1,7 +1,7 @@
 import { EmptyState, Layout, Page } from '@shopify/polaris';
 import { ResourcePicker, TitleBar } from '@shopify/app-bridge-react';
 import store from 'store-js';
-import ResourceListWithProducts from '../components/ResourceList';
+import ResourceListWithVendys from '../components/ResourceList';
 import axios from 'axios';
 
 const img = 'https://cdn.shopify.com/s/files/1/0757/9955/files/empty-state.svg';
@@ -33,8 +33,9 @@ class Index extends React.Component {
             onAction: () => this.setState({ open: true }),
           }}
         />
-        <Layout>
-          <EmptyState
+          {
+            !this.state.assistants?
+            <EmptyState
             heading="Create a new digital assistant"
             action={{
               content: 'Create Vendy',
@@ -43,9 +44,9 @@ class Index extends React.Component {
             image={img}
           >
             <p>Create a digital assistant to help your customers find products faster!</p>
-          </EmptyState>
-        </Layout>
-        <ResourceListWithProducts />
+          </EmptyState>:
+          <ResourceListWithVendys data={this.state.assistants} />
+          }
       </Page >
     );
   }

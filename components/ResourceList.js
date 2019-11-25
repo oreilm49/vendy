@@ -1,54 +1,31 @@
-import gql from 'graphql-tag';
-import { Query } from 'react-apollo';
-import { Card } from '@shopify/polaris';
-import store from 'store-js';
+import { Card, ResourceItem, TextStyle } from '@shopify/polaris';
 
-const GET_PRODUCTS_BY_ID = gql`
-  query getProducts($ids: [ID!]!) {
-    nodes(ids: $ids) {
-      ... on Product {
-        title
-        handle
-        descriptionHtml
-        id
-        images(first: 1) {
-          edges {
-            node {
-              originalSrc
-              altText
-            }
-          }
-        }
-        variants(first: 1) {
-          edges {
-            node {
-              price
-              id
-            }
-          }
-        }
-      }
-    }
-  }
-`;
 
-class ResourceListWithProducts extends React.Component {
+class ResourceListWithVendys extends React.Component {
   render() {
+    if (!this.props.data) return <div>loading..</div>
     return (
-     <Query query={GET_PRODUCTS_BY_ID} variables={{ ids: store.get('ids') }}>
-        {({ data, loading, error }) => {
-          if (loading) return <div>Loading…</div>;
-          if (error) return <div>{error.message}</div>;
-          console.log(data);
-          return (
-            <Card>
-              <p>stuff here</p>
-            </Card>
-          );
-        }}
-      </Query>
+     <Card title="Your digital assistants">
+        {
+          this.props.data.map((d, i) => {
+            return (
+              <ResourceItem
+                id={d._id}
+                url={`assistants/${d._id}`}
+                accessibilityLabel={`edit assistant for ${d.name}`}
+                key={i}
+              >
+              <h3>
+                <TextStyle variation="strong">{d.name}</TextStyle>
+              </h3>
+              <div>{d.questions.length} Questions</div>
+            </ResourceItem>
+            );
+          })
+        }
+      </Card>
     );
   }
 }
 
- export default ResourceListWithProducts;
+ export default ResourceListWithVendys;

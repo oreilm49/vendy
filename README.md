@@ -60,9 +60,9 @@ npm run dev
 ```
 2. Open a new terminal and forward traffic from localhost to reverse proxy (you'll need ssh access to the server)
 ```sh
-ssh -nN -R 8000:localhost:3000 USER@52.30.14.92
+ssh -nN -R 8000:localhost:3000 USER@dev.markoreilly.xyz
 ```
-3. Add the proxy url to Shopify. Go to the [app set up page for vendy](https://partners.shopify.com/991203/apps/3274991/edit) and paste the link into the App URL input and then into the Whitelisted redirection input with this format: https://xxxx.ngrok.io/auth/callback and save. Full guide [here](https://developers.shopify.com/tutorials/build-a-shopify-app-with-node-and-react/embed-your-app-in-shopify#authenticate-and-test) This embeds the new instance of the app in shopify. SSL needs to be configured for this to work nicely with Shopify.
+3. Add the proxy url to Shopify. Go to the [app set up page for vendy](https://partners.shopify.com/991203/apps/3274991/edit) and paste the link into the App URL input and then into the Whitelisted redirection input with this format: https://dev.markoreilly.xyz/auth/callback and save. Full guide [here](https://developers.shopify.com/tutorials/build-a-shopify-app-with-node-and-react/embed-your-app-in-shopify#authenticate-and-test) This embeds the new instance of the app in shopify.
 
 4. Once the above steps have been followed you should be able to see the app running at
 ```
@@ -73,5 +73,5 @@ https://fullstack-test.myshopify.com/admin/apps/vendy
 <!-- USAGE EXAMPLES -->
 ## Roadmap
 
-1. Set up app database
-2. Build UI for adding questions
+1. Build UI for adding questions
+2. Build frontend

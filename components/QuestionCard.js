@@ -53,27 +53,29 @@ class QuestionCard extends React.Component {
             }
         })
     }
-    handleChange = (e) =>{
-      this.setState((state)=>{
-          return {
-              form: formState(e, state)
-          }
-      })
+    handleChange = (val, id) =>{
+        this.setState((state)=>{
+            return {
+                form: formState(val, id, state)
+            }
+        })
     }
     render() {
     return (
         <Card
-            secondaryFooterAction={{
+            secondaryFooterActions={[{
                 content: 'New option',
-                action: ()=> this.toggle()
-            }}
+                onAction: ()=> this.toggle()
+            }]}
             primaryFooterAction={{
                 content: 'Save Question',
-                action: ()=> this.handleSubmit()
+                onAction: ()=> this.handleSubmit()
             }}>
             <Card.Section title="Question title">
                 <TextContainer>
                     <TextField
+                        id="title"
+                        value={this.state.form.title}
                         onChange={this.handleChange}
                         placeholder="Enter your question text here."
                     />

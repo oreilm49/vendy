@@ -1,50 +1,82 @@
-import { Card,
-         Page,
-         Layout,
-         TextField,
-         TextContainer,
-         Icon } from '@shopify/polaris';
-import {CirclePlusMinor} from '@shopify/polaris-icons';
-import { ResourcePicker, TitleBar } from '@shopify/app-bridge-react';
+import { Page, Heading } from '@shopify/polaris';
+import { TitleBar } from '@shopify/app-bridge-react';
+import QuestionCard from '../components/QuestionCard'
+import axios from 'axios';
+import { formState } from '../helpers/parserFunctions'
 
 class New extends React.Component {
-  state = {
-    assistant: {
-        title: null,
-        questions:[]
-    },
-    submitted: false
-  };
-  handleChange = () =>{
-
-  }
-  render() {
-    return (
-      <Page>
-        <TitleBar
-          primaryAction={{
-            content: 'Create Vendy',
-            onAction: () => this.setState({ open: true }),
-          }}
-        />
-            <Card  primaryFooterAction={{content: 'New option'}}>
-                <Card.Section title="Question title">
-                    <TextContainer>
-                        <TextField
-                            onChange={this.handleChange}
-                            placeholder="Enter your question text here."
-                        />
-                    </TextContainer>
-                </Card.Section>
-                <Card.Section title="Question options">
-                    <TextContainer>
-                        Option 1
-                    </TextContainer>
-                </Card.Section>
-            </Card>
-      </Page >
-    );
-  }
+  	state = {
+		form: {
+			id: null,
+			title: null,
+			questions:[]
+		},
+		submitted: false,
+		products: null,
+		attributes: null
+	};
+  	componentDidMount(){
+		axios.post('/api/v1/assistants',{ name: " " })
+		.then(res => {
+		this.setState(()=>{
+			return {
+				form: res.data
+			}
+		})
+		})
+		.catch(err => {
+			console.log(err)
+		});
+	}
+  	handleChange = (e) =>{
+		this.setState((state)=>{
+			return {
+				form: formState(e, state)
+			}
+		})
+	}
+	handleSubmit = () =>{
+		axios.put(`/api/v1/assistants/${id}`,this.state.form)
+		.then(res => {
+			this.setState(()=>{
+				return {
+					form: res.data
+				}
+			})
+		})
+		.catch(err => {
+			console.log(err)
+		});
+	}
+	updateState = (data) =>{
+		this.setState(()=>{
+			return {
+				form: data
+			}
+		})
+	}
+	render() {
+		return (
+		<Page>
+			<TitleBar primaryAction={{
+					content: 'Create Vendy'
+				}}
+			/>
+			<Heading>New Assistant</Heading>
+			{
+				this.state.form.questions.map((val, id)=>{
+					return <QuestionCard
+								responseData={this.updateState}
+								assistant={this.state.form}
+								question={val}/>
+				})
+			}
+			<QuestionCard
+				responseData={this.updateState}
+				assistant={this.state.form}/>
+		</Page >
+		);
+	}
 }
 
 export default New;

@@ -1,4 +1,4 @@
-import { EmptyState, Layout, Page } from '@shopify/polaris';
+import { EmptyState, Layout, Modal, Page } from '@shopify/polaris';
 import { ResourcePicker, TitleBar } from '@shopify/app-bridge-react';
 import store from 'store-js';
 import ResourceListWithVendys from '../components/ResourceList';

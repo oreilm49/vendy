@@ -1,13 +1,14 @@
 import { TextContainer,
          OptionList,
-         Modal } from '@shopify/polaris';
+         Modal,
+         TextField } from '@shopify/polaris';
 import { formState } from '../helpers/parserFunctions'
 import axios from 'axios';
 
 class OptionModal extends React.Component {
     state = {
-        products:[],
-        option: {
+        products:[{id:"test",label:"test"},{id:"test2",label:"test2"}],
+        form: {
             id: null,
             title: null,
             products:[]
@@ -16,7 +17,6 @@ class OptionModal extends React.Component {
         question:null,
         submitted: false,
         modal: false,
-        products: null,
         attributes: null
     };
     componentDidMount(){
@@ -30,12 +30,12 @@ class OptionModal extends React.Component {
             })
         }
     }
-    handleChange = (e) =>{
-      this.setState((state)=>{
-          return {
-              form: formState(e, state)
-          }
-      })
+    handleChange = (val, id) =>{
+        this.setState((state)=>{
+            return {
+                form: formState(val, id, state)
+            }
+        })
     }
 	handleSubmit = () =>{
         const {assistant, question} = this.props
@@ -60,12 +60,34 @@ class OptionModal extends React.Component {
             });
         }
     }
+    handleSelected = (e) => {
+        console.log(e)
+        this.setState((prevState)=>{
+            if(prevState.form.products.includes(e)){
+                return {
+                    form:{
+                        ...prevState.form,
+                        products: prevState.form.products.filter((val,i)=>{
+                            return val !== e
+                        })
+                    }
+                }
+            } else {
+                return {
+                    form:{
+                        ...prevState.form,
+                        products: prevState.form.products.concat(e)
+                    }
+                }
+            }
+        },()=>{console.log(this.state.form)})
+    }
 
     render() {
         return (
             <Modal
                 open={this.props.open}
-                onClose={this.props.closeModal}
+                onClose={()=> this.props.closeModal()}
                 title="Add option to question"
                 primaryAction={{
                     content: 'Submit Option',
@@ -79,11 +101,19 @@ class OptionModal extends React.Component {
                         Select what products should be linked to this option.
                         </p>
                     </TextContainer>
+                    <TextContainer>
+                        <TextField
+                            id="title"
+                            value={this.state.form.title}
+                            onChange={this.handleChange}
+                            placeholder="Enter your option text here."
+                        />
+                    </TextContainer>
                     <OptionList
                         title="Select Products"
-                        onChange={this.handleChange}
+                        onChange={this.handleSelected}
                         options={this.state.products}
-                        selected={this.state.option.products}
+                        selected={this.state.form.products}
                         allowMultiple
                     />
                 </Modal.Section>

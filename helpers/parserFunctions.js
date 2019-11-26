@@ -1,8 +1,6 @@
-export const formState = (e, state) => {
+export const formState = (val, id, state) => {
     const { form } = state;
     const currentState = form;
-    const id = e.target.id
-    const val = e.target.value
     currentState[id] = val
     return currentState
 }
